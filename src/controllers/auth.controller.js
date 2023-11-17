@@ -1,6 +1,7 @@
 const User = require("../models/user.model");
 const bcrypt = require("bcrypt");
 const AppError = require("../utils/appError");
+const Response = require("../utils/response");
 
 exports.login = async (req, res) => {
 
@@ -18,17 +19,14 @@ exports.register = async (req, res, next) => {
     //TODO db gitmeden hashlemeyi unutma
     req.body.password = await bcrypt.hash(req.body.password, 12)
 
-    try {
-        const newUser = new User(req.body)
-        await newUser.save()
-            .then((response) => {
-                return res.status(200).json({
-                    success: true,
-                    data: response,
-                    message: "user added successfully"
-                })
-            })
-    } catch (error) {
-        console.log(error);
-    }
+
+    const newUser = new User(req.body)
+    await newUser.save()
+        .then((data) => {
+            return new Response(data, "user added successfully").created(res)
+        })
+        .catch(() => {
+            return next(new AppError("User not added!, 400",))
+        })
+
 }
