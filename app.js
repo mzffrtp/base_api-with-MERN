@@ -7,6 +7,8 @@ const appRouter = require("./src/routers/appRoutes");
 const authRouter = require("./src/routers/auth.routes");
 const AppError = require("./src/utils/appError");
 const errorHnadlerMiddleware = require("./src/middlewares/errorHandler");
+const cors = require("cors");
+const corsOptions = require("./src/helpers/corsOprtions");
 
 app.use(morgan("dev"))
 app.use((req, res, next) => {
@@ -14,6 +16,9 @@ app.use((req, res, next) => {
     next();
 })
 app.use(express.json())
+
+//cors
+app.use(cors(corsOptions))
 //routes
 app.use("/api/v1", appRouter)
 app.use("/api/v1/auth", authRouter)
