@@ -1,5 +1,5 @@
 class Response {
-    constructor(data = null, message = null) {
+    constructor(data, message) {
         this.data = data,
             this.message = message
     }

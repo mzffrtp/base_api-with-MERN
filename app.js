@@ -17,6 +17,8 @@ app.use(express.json())
 //routes
 app.use("/api/v1", appRouter)
 app.use("/api/v1/auth", authRouter)
+app.use("/api/v1/me", authRouter)
+
 
 //! undefined route - error management
 app.all("*", (req, res, next) => {
@@ -24,6 +26,6 @@ app.all("*", (req, res, next) => {
 })
 
 //! app error management
-app.use(errorHnadlerMiddleware);
+app.use(errorHnadlerMiddleware)
 
 module.exports = app
