@@ -46,6 +46,8 @@ app.use("/api/v1/auth", authRouter)
 app.use("/api/v1/me", authRouter)
 app.use("/api/v1/muster", musterRouer)
 app.use("/forgotPassword", authRouter)
+app.use("/resetCodeCheck", authRouter)
+
 
 
 

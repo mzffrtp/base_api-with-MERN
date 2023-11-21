@@ -60,6 +60,29 @@ const tokenCheck = catchAsync(
 const protectedMe = async (req, res, next) => {
     return new Response(req.user).success(res)
 }
+
+const createTemporaryToken = async (userId, email) => {
+    try {
+        console.log("Payload before jwt.sign():", { userId, email });
+
+        const payload = {
+            sub: userId,
+            email
+        };
+
+        const token = await jwt.sign(payload, process.env.JWT_TEMPORARY_SECRET_KEY, {
+            algorithm: "HS512",
+            expiresIn: process.env.JWT_TEMPORARY_EXPIRES_IN
+        });
+
+        console.log("Token generated successfully");
+
+        return token;
+    } catch (error) {
+        console.error("Error creating token:", error);
+        return new Error("Error creating temporary token");
+    }
+};
 module.exports = {
-    creatToken, tokenCheck, protectedMe
+    creatToken, tokenCheck, protectedMe, createTemporaryToken
 }

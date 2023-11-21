@@ -2,11 +2,12 @@ const User = require("../models/user.model");
 const bcrypt = require("bcrypt");
 const AppError = require("../utils/appError");
 const Response = require("../utils/response");
-const { creatToken } = require("../middlewares/authJWT");
+const { creatToken, createTemporaryToken } = require("../middlewares/authJWT");
 const catchAsync = require("../utils/catchAsync");
 const crypto = require("crypto");
 const sendMail = require("../utils/sendMail");
-const moment = require("moment")
+const moment = require("moment");
+const { time } = require("console");
 
 exports.login = async (req, res, next) => {
     const { email, password } = req.body
@@ -44,20 +45,19 @@ exports.forgotPassword = catchAsync(
 
         const userWantPass = await User.findOne({ email })
 
-        if (!userWantPass) { return next(new AppError("No account found for this email user", 400)) }
+        if (!userWantPass) next(new AppError("Unvalid user", 400))
 
-        //!token for resetting password should be encrypted
-        const resetToken = userWantPass.creatPasswordResetToken();
-        await userWantPass.save({ validateBeforeSave: false })
+        const resetCode = crypto.randomBytes(3).toString("hex")
+        console.log(resetCode);
 
-
+        /*
         await sendMail({
             from: "test@outlook.com",
             to: userWantPass.email,
             subject: "Reset Password",
             text: `Reset Password Code ${resetCode}`
         })
-
+        */
 
         await User.updateOne(
             { email },
@@ -75,4 +75,25 @@ exports.forgotPassword = catchAsync(
     }
 )
 
-exports
+exports.resetCodeCheck = catchAsync(
+    async (req, res) => {
+        const { email, code } = req.body
+
+        const user = await User.findOne({ email }).select("_id name lastname email reset")
+
+        if (!user) { next(new AppError("Invalid user account", 401)) }
+
+        const dbTime = moment(user.reset.time);
+        const currentTime = moment(new Date());
+        const timeDiff = dbTime.diff(currentTime, "minutes");
+
+        console.log("time diff--->", time);
+
+        if (timeDiff <= 0 || !user.reset.code === code) { next(new AppError("Invalid code", 401)) }
+
+        const temporaryToken = await createTemporaryToken(user._id, user.email)
+
+        return new Response(temporaryToken, "You can reset your password").success(res)
+
+    }
+)
