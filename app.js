@@ -12,6 +12,7 @@ const corsOptions = require("./src/helpers/corsOprtions");
 const mongoSanitize = require("express-mongo-sanitize")
 const path = require("path");
 const musterRouer = require("./src/routers/muster.routes");
+const apiLimiter = require("./src/middlewares/rateLimit");
 
 app.use(morgan("dev"))
 app.use((req, res, next) => {
@@ -26,6 +27,9 @@ app.use("/uploads", express.static(__dirname))
 
 //cors
 //! app.use(cors(corsOptions))
+
+//bruteforce attacks, rate limit
+app.use("/api", apiLimiter)
 
 // mongoSanitize
 app.use(

@@ -24,6 +24,7 @@
 - Security
   - cors for URL whitelisting
   - express-mongo-sanitize for injection attacks
+  - rateLimit for brute force attacs
 
 ---
 
