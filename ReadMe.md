@@ -21,4 +21,11 @@
 
 ---
 
-- CORP for URL security
+- Security
+  - cors for URL whitelisting
+  - express-mongo-sanitize for injection attacks
+
+---
+
+- MULTER
+  for phto uploading

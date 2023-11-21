@@ -9,6 +9,9 @@ const AppError = require("./src/utils/appError");
 const errorHnadlerMiddleware = require("./src/middlewares/errorHandler");
 const cors = require("cors");
 const corsOptions = require("./src/helpers/corsOprtions");
+const mongoSanitize = require("express-mongo-sanitize")
+const path = require("path");
+const musterRouer = require("./src/routers/muster.routes");
 
 app.use(morgan("dev"))
 app.use((req, res, next) => {
@@ -17,12 +20,24 @@ app.use((req, res, next) => {
 })
 app.use(express.json())
 
+//import public and uploads files
+app.use(express.static(path.join(__dirname, "public")));
+app.use("/uploads", express.static(__dirname))
+
 //cors
-app.use(cors(corsOptions))
+//! app.use(cors(corsOptions))
+
+// mongoSanitize
+app.use(
+    mongoSanitize({
+        replaceWith: '_',
+    }),
+);
 //routes
 app.use("/api/v1", appRouter)
 app.use("/api/v1/auth", authRouter)
 app.use("/api/v1/me", authRouter)
+app.use("/api/v1/muster", musterRouer)
 
 
 //! undefined route - error management

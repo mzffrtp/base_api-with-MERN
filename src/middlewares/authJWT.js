@@ -39,8 +39,7 @@ const tokenCheck = catchAsync(
         await jwt.verify(token, process.env.JWT_SECRET_KEY, async (err, decoded) => {
             if (err) next(new AppError("unvalid token!", 401))
 
-            const userInDB = await User.findById(decoded.sub).select("_id name lastname email password")
-            console.log(userInDB);
+            const userInDB = await User.findById(decoded.sub).select("_id name lastname email")
 
             //! uer exits after JWT
             !userInDB && next(new AppError("Unvalid Token", 401))

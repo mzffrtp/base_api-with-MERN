@@ -12,7 +12,6 @@ exports.login = async (req, res, next) => {
     //? orher wise check if email and password is provoded
 
     const user = await User.findOne({ email }).select("+password")
-    console.log("user in db-->", user)
     !user && next(new AppError("User not registered, please create an account", 401))
 
     const correctPassword = await bcrypt.compare(password, user.password)
