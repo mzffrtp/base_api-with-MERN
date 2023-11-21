@@ -29,4 +29,10 @@
 ---
 
 - MULTER
-  for phto uploading
+  for photo uploading
+
+---
+
+- Email sending
+  - node mailer
+  - moment and moment-timezone libs for date formatting

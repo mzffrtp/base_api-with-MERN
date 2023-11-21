@@ -4,6 +4,9 @@ const AppError = require("../utils/appError");
 const Response = require("../utils/response");
 const { creatToken } = require("../middlewares/authJWT");
 const catchAsync = require("../utils/catchAsync");
+const crypto = require("crypto");
+const sendMail = require("../utils/sendMail");
+const moment = require("moment")
 
 exports.login = async (req, res, next) => {
     const { email, password } = req.body
@@ -33,4 +36,43 @@ exports.register = catchAsync(async (req, res, next) => {
 
     next()
 
-})
+});
+
+exports.forgotPassword = catchAsync(
+    async (req, res, next) => {
+        const { email } = req.body
+
+        const userWantPass = await User.findOne({ email })
+
+        if (!userWantPass) { return next(new AppError("No account found for this email user", 400)) }
+
+        //!token for resetting password should be encrypted
+        const resetToken = userWantPass.creatPasswordResetToken();
+        await userWantPass.save({ validateBeforeSave: false })
+
+
+        await sendMail({
+            from: "test@outlook.com",
+            to: userWantPass.email,
+            subject: "Reset Password",
+            text: `Reset Password Code ${resetCode}`
+        })
+
+
+        await User.updateOne(
+            { email },
+            {
+                reset: {
+                    code: resetCode,
+                    time: moment(new Date())
+                        .add(2.15, "hour")
+                        .format("YYYY-MM-DD HH:mm:ss")
+                }
+            }
+        )
+
+        return new Response(true, "Please check you mail box").success(res)
+    }
+)
+
+exports

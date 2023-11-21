@@ -13,6 +13,9 @@ const mongoSanitize = require("express-mongo-sanitize")
 const path = require("path");
 const musterRouer = require("./src/routers/muster.routes");
 const apiLimiter = require("./src/middlewares/rateLimit");
+const moment = require("moment-timezone");
+moment.tz.setDefault("Europe/Zurich")
+
 
 app.use(morgan("dev"))
 app.use((req, res, next) => {
@@ -42,6 +45,8 @@ app.use("/api/v1", appRouter)
 app.use("/api/v1/auth", authRouter)
 app.use("/api/v1/me", authRouter)
 app.use("/api/v1/muster", musterRouer)
+app.use("/forgotPassword", authRouter)
+
 
 
 //! undefined route - error management
